@@ -1,2 +1,3 @@
-# LRU_Cache
-A C++ implementation of a LRU cache
+# LRU cache
+
+C++ LRU cache.
