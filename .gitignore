@@ -30,4 +30,9 @@
 *.exe
 *.out
 *.app
-bazel*
+
+# Bazel generated directories
+bazel-bin
+bazel-lru_cache
+bazel-out
+bazel-testlogs

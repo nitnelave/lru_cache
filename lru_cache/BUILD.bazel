@@ -1,0 +1,24 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+cc_library(
+    name = "lru_cache",
+    hdrs = ["lru_cache.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":lru_cache_impl",
+        ":dynamic_lru_cache",
+    ],
+)
+
+cc_library(
+    name = "lru_cache_impl",
+    hdrs = ["lru_cache_impl.h"],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "dynamic_lru_cache",
+    hdrs = ["dynamic_lru_cache.h"],
+    visibility = ["//visibility:public"],
+    deps = [":lru_cache_impl"],
+)
