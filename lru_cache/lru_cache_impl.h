@@ -1,15 +1,12 @@
-#ifndef LRU_CACHE_LRU_CACHE_H_
-#define LRU_CACHE_LRU_CACHE_H_
+#ifndef LRU_CACHE_LRU_CACHE_IMPL_H_
+#define LRU_CACHE_LRU_CACHE_IMPL_H_
 
 #include <cassert>
 #include <experimental/type_traits>
 #include <iterator>
 #include <type_traits>
-#include <unordered_map>
-#include <vector>
 
-namespace lru_cache {
-namespace internal {
+namespace lru_cache::internal {
 
 template <typename Key, typename Value>
 static constexpr auto no_op_dropped_entry_callback = [](Key, Value) {};
@@ -23,15 +20,23 @@ constexpr bool has_emplace_back =
     std::experimental::is_detected_v<has_emplace_back_t, Container, Value>;
 
 template <typename CRTPBase, typename Key, typename Value,
-          typename ValueProvider, typename IndexType = uint16_t,
-          template <typename, typename, typename...> typename Map =
-              std::unordered_map,
-          template <typename, typename...> typename Array = std::vector,
-          bool ByAccessOrder = true, bool LRU = true,
+          typename ValueProvider, typename CacheOptions,
           typename DroppedEntryCallback =
               decltype(no_op_dropped_entry_callback<Key, Value>)>
 class LruCacheImpl {
 public:
+  using IndexType = typename CacheOptions::IndexType;
+
+  template <typename K, typename V, typename... A>
+  using Map = typename CacheOptions::template Map<K, V, A...>;
+
+  template <typename V, typename... A>
+  using Array = typename CacheOptions::template Array<V, A...>;
+
+  static constexpr bool ByAccessOrder = CacheOptions::ByAccessOrder;
+
+  static constexpr bool LRU = CacheOptions::LRU;
+
   using value_type = std::pair<Key, Value>;
 
   static_assert(std::numeric_limits<IndexType>::is_integer,
@@ -333,56 +338,6 @@ private:
   DroppedEntryCallback dropped_entry_callback_;
 };
 
-} // namespace internal
+} // namespace lru_cache::internal
 
-template <typename Key, typename Value, typename ValueProvider,
-          typename IndexType = uint16_t,
-          template <typename, typename, typename...> typename Map =
-              std::unordered_map,
-          template <typename, typename...> typename Array = std::vector,
-          bool ByAccessOrder = true, bool LRU = true,
-          typename DroppedEntryCallback =
-              decltype(internal::no_op_dropped_entry_callback<Key, Value>)>
-class DynamicLruCache
-    : public internal::LruCacheImpl<
-          DynamicLruCache<Key, Value, ValueProvider, IndexType, Map, Array,
-                          ByAccessOrder, LRU, DroppedEntryCallback>,
-          Key, Value, ValueProvider, IndexType, Map, Array, ByAccessOrder, LRU,
-          DroppedEntryCallback> {
-  using Base = internal::LruCacheImpl<DynamicLruCache, Key, Value,
-                                      ValueProvider, IndexType, Map, Array,
-                                      ByAccessOrder, LRU, DroppedEntryCallback>;
-
-public:
-  DynamicLruCache(IndexType max_size, ValueProvider value_provider,
-                  DroppedEntryCallback dropped_entry_callback = {})
-      : Base(std::move(value_provider), std::move(dropped_entry_callback)),
-        max_size_(max_size) {
-    assert(max_size > 2);
-  }
-
-  IndexType max_size() const { return max_size_; }
-
-protected:
-  const IndexType max_size_;
-};
-
-template <typename Key, typename Value, typename ValueProvider,
-          typename IndexType = uint16_t,
-          template <typename, typename, typename...>
-          typename Map = std::unordered_map,
-          template <typename, typename...> typename Array = std::vector,
-          bool ByAccessOrder = true, bool LRU = true,
-          typename DroppedEntryCallback =
-              decltype(internal::no_op_dropped_entry_callback<Key, Value>)>
-DynamicLruCache<Key, Value, ValueProvider, IndexType, Map, Array, ByAccessOrder,
-                LRU, DroppedEntryCallback>
-make_dynamic_lru_cache(IndexType max_size, ValueProvider v,
-                       DroppedEntryCallback c =
-                           internal::no_op_dropped_entry_callback<Key, Value>) {
-  return {max_size, v, c};
-}
-
-} // namespace lru_cache
-
-#endif // LRU_CACHE_LRU_CACHE_H_
+#endif // LRU_CACHE_LRU_CACHE_IMPL_H_

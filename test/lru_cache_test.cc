@@ -1,7 +1,8 @@
 #include <iostream>
 
+#include "lru_cache/lru_cache.h"
+
 #include "catch_util.h"
-#include "lru_cache.h"
 #include "range_matcher_util.h"
 
 using ::lru_cache::make_dynamic_lru_cache;
@@ -27,30 +28,24 @@ TEST_CASE("LRU cache drops LRU entries", "[LRU][dynamic]") {
     REQUIRE(my_lru_cache[3] == 3);
     REQUIRE(dropped.empty());
     REQUIRE_THAT(fetched, Equals(std::vector<int>{1, 2, 3}));
+    REQUIRE_THAT(my_lru_cache, LruRangeEquals({{3, 3}, {2, 2}, {1, 1}}));
     SECTION("Fetching one more element drops the first") {
       REQUIRE(my_lru_cache[4] == 4);
       REQUIRE_THAT(fetched, Equals(std::vector<int>{1, 2, 3, 4}));
       REQUIRE_THAT(dropped, Equals(std::vector<int>{1}));
+      REQUIRE_THAT(my_lru_cache, LruRangeEquals({{4, 4}, {3, 3}, {2, 2}}));
     }
     SECTION("Fetching an element already there doesn't fetch anything") {
       REQUIRE(my_lru_cache[1] == 1);
       REQUIRE(dropped.empty());
       REQUIRE_THAT(fetched, Equals(std::vector<int>{1, 2, 3}));
+      REQUIRE_THAT(my_lru_cache, LruRangeEquals({{1, 1}, {3, 3}, {2, 2}}));
       SECTION("Fetching one more element drops the second") {
         REQUIRE(my_lru_cache[4] == 4);
         REQUIRE_THAT(fetched, Equals(std::vector<int>{1, 2, 3, 4}));
         REQUIRE_THAT(dropped, Equals(std::vector<int>{2}));
-        REQUIRE_THAT(my_lru_cache, LruRangeEquals({{4, 4}, {1, 1}, {3, 4}}));
+        REQUIRE_THAT(my_lru_cache, LruRangeEquals({{4, 4}, {1, 1}, {3, 3}}));
       }
     }
   }
-  /*
-  my_lru_cache[1];
-  my_lru_cache[4];
-  my_lru_cache[5];
-  const auto& cache = my_lru_cache;
-  for (const auto& kv : cache) {
-    std::cout << "Key: " << kv.first << ", Value: " << kv.second << '\n';
-  }
-  */
 }
