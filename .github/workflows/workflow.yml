@@ -1,0 +1,26 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+      - release-*
+    tags:
+      - '*.*.*'
+  pull_request:
+
+jobs:
+  check:
+    strategy:
+      fail-fast: true
+      matrix:
+        - macos-latest
+        - ubuntu-latest
+    name: check - (${{ matrix.platform }})
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@master
+      - name: Install bazelisk
+        run: ./tools/ci/install_bazelisk.sh v1.2.1 ${{ matrix.platform }}
+
+      - name: Test
+        run: ./bin/bazel test test:all
