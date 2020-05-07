@@ -1,0 +1,33 @@
+# Avoid blowing up the RAM usage.
+startup --host_jvm_args=-Xmx2500m
+startup --host_jvm_args=-Xms2500m
+test --local_ram_resources=HOST_RAM*.1
+
+# Don't OOM with parallel builds
+build --local_ram_resources=2048
+build --local_cpu_resources=HOST_CPUS*.5
+
+# Understand failures better
+build --verbose_failures
+test --verbose_failures
+
+build --action_env=CC=clang
+build --announce_rc=yes
+
+# BES UI
+build --bes_results_url=https://app.buildbuddy.io/invocation/
+build --bes_backend=grpcs://events.buildbuddy.io:1986
+build --remote_cache=grpcs://cache.buildbuddy.io:1986
+build --noremote_upload_local_results
+test --bes_results_url=https://app.buildbuddy.io/invocation/
+test --bes_backend=grpcs://events.buildbuddy.io:1986
+test --remote_cache=grpcs://cache.buildbuddy.io:1986
+test --noremote_upload_local_results
+
+# UI config
+build --color=yes
+build --curses=no
+build --show_progress_rate_limit=2
+test --color=yes
+test --curses=no
+test --show_progress_rate_limit=2
