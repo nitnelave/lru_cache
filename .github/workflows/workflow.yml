@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Install bazelisk
-        run: ./tools/ci/install_bazelisk.sh v1.2.1 ${{ matrix.platform }}
+        run: ./tools/ci/install_bazelisk.sh v1.4.0 ${{ matrix.platform }}
 
       - name: Test
         run: ./bin/bazel test test:all
