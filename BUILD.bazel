@@ -13,11 +13,3 @@ cc_library(
     deps = ["//lru_cache:dynamic_lru_cache"],
     visibility = ["//visibility:public"],
 )
-
-cmake_external(
-   name = "catch2",
-   lib_source = "@com_github_catchorg_catch2//:all",
-   headers_only = True,
-   cmake_options = ["-DCATCH_ENABLE_WERROR=OFF"],
-   visibility = ["//visibility:public"],
-)
