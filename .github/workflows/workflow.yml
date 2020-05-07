@@ -13,8 +13,9 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        - macos-latest
-        - ubuntu-latest
+        platform:
+          - macos-latest
+          - ubuntu-latest
     name: check - (${{ matrix.platform }})
     runs-on: ${{ matrix.platform }}
     steps:
