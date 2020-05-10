@@ -18,12 +18,32 @@ cc_library(
     deps = [":catch_util"],
 )
 
+cc_library(
+    name = "key_type",
+    hdrs = ["key_type.h"],
+)
+
 cc_test(
     name = "lru_cache_test",
     srcs = ["lru_cache_test.cc"],
     deps = [
         ":test_main",
         ":catch_util",
+        ":key_type",
+        ":range_matcher_util",
+        "//lru_cache:lru_cache",
+    ],
+)
+
+cc_test(
+    name = "lru_cache_test_asan",
+    srcs = ["lru_cache_test.cc"],
+    copts = ["-fsanitize=address", "-fno-omit-frame-pointer", "-g"],
+    linkopts = ["-fsanitize=address"],
+    deps = [
+        ":test_main",
+        ":catch_util",
+        ":key_type",
         ":range_matcher_util",
         "//lru_cache:lru_cache",
     ],

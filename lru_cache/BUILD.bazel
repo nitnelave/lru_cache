@@ -7,6 +7,8 @@ cc_library(
     deps = [
         ":lru_cache_impl",
         ":dynamic_lru_cache",
+        ":node_lru_cache",
+        ":static_lru_cache",
     ],
 )
 
@@ -17,8 +19,43 @@ cc_library(
 )
 
 cc_library(
+    name = "vector_node_container",
+    hdrs = ["vector_node_container.h"],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
     name = "dynamic_lru_cache",
     hdrs = ["dynamic_lru_cache.h"],
     visibility = ["//visibility:public"],
-    deps = [":lru_cache_impl"],
+    deps = [
+        ":lru_cache_impl",
+        ":vector_node_container",
+    ],
+)
+
+cc_library(
+    name = "array_node_container",
+    hdrs = ["array_node_container.h"],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "static_lru_cache",
+    hdrs = ["static_lru_cache.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":lru_cache_impl",
+        ":array_node_container",
+    ],
+)
+
+cc_library(
+    name = "node_lru_cache",
+    hdrs = ["node_lru_cache.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":lru_cache_impl",
+        "@com_google_absl//absl/container:node_hash_set",
+    ],
 )
