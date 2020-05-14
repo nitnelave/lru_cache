@@ -15,7 +15,9 @@ namespace lru_cache {
 
 // Options for a dynamic LRU cache with a maximum size.
 // The index_type should be an unsigned integer.
-template <typename Key, typename Value, typename index_type = uint16_t, bool by_access_order = true> struct DynamicLruCacheOptions {
+template <typename Key, typename Value, typename index_type = uint16_t,
+          bool by_access_order = true>
+struct DynamicLruCacheOptions {
   using IndexType = index_type;
 
   static_assert(std::numeric_limits<IndexType>::is_integer,
@@ -63,6 +65,11 @@ public:
 
   IndexType max_size() const { return max_size_; }
 
+  void reserve(IndexType size) {
+    assert(size <= max_size());
+    nodes_.reserve(size);
+  }
+
 protected:
   NodeContainer &node_container() { return nodes_; }
   Map &map() { return map_; }
@@ -81,7 +88,6 @@ private:
   NodeContainer nodes_;
   Map map_;
 };
-
 
 // Factory function for a dynamic LRU cache.
 // The maximum size should be at most one less than the maximum representable

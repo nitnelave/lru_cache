@@ -48,9 +48,7 @@ private:
     return const_cast<IndexType>(&node);
   }
 
-  Node &index_to_node(IndexType ptr) const {
-    return *ptr;
-  }
+  Node &index_to_node(IndexType ptr) const { return *ptr; }
   Map &map_;
 };
 
@@ -153,8 +151,7 @@ public:
   NodeLruCache(size_t max_size, ValueProvider value_provider,
                DroppedEntryCallback dropped_entry_callback = {})
       : Base(std::move(value_provider), std::move(dropped_entry_callback)),
-        max_size_(max_size), nodes_(map_) {
-  }
+        max_size_(max_size), nodes_(map_) {}
 
   size_t max_size() const { return max_size_; }
 
@@ -166,7 +163,7 @@ protected:
   IndexType index_of(const Key &key) const {
     auto it = map_.find(key);
     if (it != map_.end()) {
-      return const_cast<Node*>(&*it);
+      return const_cast<Node *>(&*it);
     }
     return NodeContainer::INVALID_INDEX;
   }

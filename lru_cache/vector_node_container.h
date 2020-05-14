@@ -7,7 +7,8 @@ namespace lru_cache {
 
 // A node container based on a vector.
 // It doesn't define a maximum size.
-template <typename Node, typename index_type = typename Node::IndexType> struct VectorNodeContainer {
+template <typename Node, typename index_type = typename Node::IndexType>
+struct VectorNodeContainer {
   using node_type = Node;
   using key_type = typename node_type::key_type;
   using IndexType = index_type;
@@ -31,10 +32,16 @@ template <typename Node, typename index_type = typename Node::IndexType> struct 
     return index;
   }
 
+  // Reserve memory for the underlying vector, to avoid reallocations.
+  void reserve(IndexType size) {
+    assert(size < INVALID_INDEX);
+    list_content_.reserve(size);
+  }
+
 private:
   std::vector<node_type> list_content_;
 };
 
-} // lru_cache
+} // namespace lru_cache
 
 #endif // LRU_CACHE_VECTOR_NODE_CONTAINER_H_

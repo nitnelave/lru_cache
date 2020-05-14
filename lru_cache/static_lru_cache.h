@@ -15,7 +15,8 @@ namespace lru_cache {
 
 // Options for a static (fixed-size) LRU cache, of size N.
 // The index_type should be an unsigned integer.
-template <typename Key, typename Value, typename index_type, index_type N, bool by_access_order = true>
+template <typename Key, typename Value, typename index_type, index_type N,
+          bool by_access_order = true>
 struct StaticLruCacheOptions {
   using IndexType = index_type;
 
