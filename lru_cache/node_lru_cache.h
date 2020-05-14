@@ -120,10 +120,11 @@ private:
 };
 
 // Set of options for the set-based LRU cache.
-template <typename Key, typename Value, bool by_access_order = true> struct NodeLruCacheOptions {
-  // Passing the magic value of void* gives us Node* as index type.
-  using Node = internal::Node<Key, Value, void*>;
-  using IndexType = Node*;
+template <typename Key, typename Value, bool by_access_order = true>
+struct NodeLruCacheOptions {
+  using Node = internal::Node<Key, Value, internal::self_ptr_link_tag>;
+  using IndexType = Node *;
+  static_assert(std::is_same_v<IndexType, typename Node::IndexType>);
   using Map = MapAdaptor<Key, Value, Node>;
   using NodeContainer = MapNodeContainer<Node, Map>;
   static constexpr bool ByAccessOrder = by_access_order;

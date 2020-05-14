@@ -81,11 +81,16 @@ namespace lru_cache::internal {
 template <typename Key, typename Value>
 static constexpr auto no_op_dropped_entry_callback = [](Key, Value) {};
 
+// Tag to tell Node to use a Node* as linked list element.
+struct self_ptr_link_tag {};
+
 // Element in the linked list of last accessed.
 template <typename Key, typename Value, typename index_type> struct Node {
-  // To allow pointer-style linked list, if index_type is void* we use Node* as
-  // index type.
-  using IndexType = std::conditional_t<std::is_same_v<index_type, void*>, Node*, index_type>;
+  // To allow pointer-style linked list, if index_type is self_ptr_link_tag we
+  // use Node* as index type.
+  using IndexType =
+      std::conditional_t<std::is_same_v<index_type, self_ptr_link_tag>, Node *,
+                         index_type>;
   using key_type = Key;
   using value_type = Value;
   using pair_type = std::pair<Key, Value>;
