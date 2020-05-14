@@ -93,12 +93,14 @@ template <typename Key, typename Value, typename index_type> struct Node {
   Node() = default;
 
   Node(Key key, Value value, IndexType prev, IndexType next)
-      : prev_(prev), next_(next) {
-    new (&this->value()) Value(std::move(value));
-    new (&this->key()) Key(std::move(key));
-  }
+      : prev_(prev), next_(next),
+        value_pair_(std::move(key), std::move(value)) {}
 
-  ~Node() { value_pair().~pair_type(); }
+  // Move-only node.
+  Node(const Node &) = delete;
+  Node &operator=(const Node &) = delete;
+  Node(Node &&) = default;
+  Node &operator=(Node &&) = default;
 
   Value &value() { return value_pair().second; }
   const Value &value() const { return value_pair().second; }
@@ -106,12 +108,8 @@ template <typename Key, typename Value, typename index_type> struct Node {
   Key &key() { return value_pair().first; }
   const Key &key() const { return value_pair().first; }
 
-  pair_type &value_pair() {
-    return value_pair_;
-  }
-  const pair_type &value_pair() const {
-    return value_pair_;
-  }
+  pair_type &value_pair() { return value_pair_; }
+  const pair_type &value_pair() const { return value_pair_; }
 
   // The hash of a node is just the hash of the key.
   template <typename H> friend H AbslHashValue(H h, const Node &n) {
