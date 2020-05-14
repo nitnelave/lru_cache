@@ -22,8 +22,8 @@ struct ArrayNodeContainer {
   // ArrayNodeContainer contains the whole array inline, therefore it can
   // neither be cheaply copied nor moved. If you need a static amount of
   // memory, but on the heap, use a VectorNodeContainer and call reserve().
-  ArrayNodeContainer(const ArrayNodeContainer &other) = delete;
-  ArrayNodeContainer &operator=(const ArrayNodeContainer &other) = delete;
+  ArrayNodeContainer(const ArrayNodeContainer& other) = delete;
+  ArrayNodeContainer& operator=(const ArrayNodeContainer& other) = delete;
 
   IndexType emplace_back(node_type node) {
     IndexType index = size_;
@@ -39,25 +39,25 @@ struct ArrayNodeContainer {
     }
   }
 
-  IndexType replace_entry(IndexType index, const key_type &old_key,
+  IndexType replace_entry(IndexType index, const key_type& old_key,
                           node_type new_node) {
     operator[](index) = std::move(new_node);
     return index;
   }
 
-  node_type &operator[](IndexType index) {
+  node_type& operator[](IndexType index) {
     assert(index < size_);
     return list_content()[index];
   }
-  const node_type &operator[](IndexType index) const {
+  const node_type& operator[](IndexType index) const {
     assert(index < size_);
     return list_content()[index];
   }
 
-private:
-  node_type *list_content() { return reinterpret_cast<node_type *>(&storage_); }
-  const node_type *list_content() const {
-    return reinterpret_cast<node_type *>(&storage_);
+ private:
+  node_type* list_content() { return reinterpret_cast<node_type*>(&storage_); }
+  const node_type* list_content() const {
+    return reinterpret_cast<node_type*>(&storage_);
   }
   // We need to keep track of the size to destroy only the elements that were
   // constructed.
@@ -68,6 +68,6 @@ private:
   static_assert(sizeof(storage_) >= N * sizeof(node_type));
 };
 
-} // namespace lru_cache
+}  // namespace lru_cache
 
-#endif // LRU_CACHE_ARRAY_NODE_CONTAINER_H_
+#endif  // LRU_CACHE_ARRAY_NODE_CONTAINER_H_

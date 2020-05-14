@@ -20,13 +20,13 @@ struct VectorNodeContainer {
     return list_content_.size() - 1;
   }
 
-  node_type &operator[](IndexType index) { return list_content_[index]; }
+  node_type& operator[](IndexType index) { return list_content_[index]; }
 
-  const node_type &operator[](IndexType index) const {
+  const node_type& operator[](IndexType index) const {
     return list_content_[index];
   }
 
-  IndexType replace_entry(IndexType index, const key_type &old_key,
+  IndexType replace_entry(IndexType index, const key_type& old_key,
                           node_type new_node) {
     list_content_[index] = std::move(new_node);
     return index;
@@ -38,10 +38,10 @@ struct VectorNodeContainer {
     list_content_.reserve(size);
   }
 
-private:
+ private:
   std::vector<node_type> list_content_;
 };
 
-} // namespace lru_cache
+}  // namespace lru_cache
 
-#endif // LRU_CACHE_VECTOR_NODE_CONTAINER_H_
+#endif  // LRU_CACHE_VECTOR_NODE_CONTAINER_H_

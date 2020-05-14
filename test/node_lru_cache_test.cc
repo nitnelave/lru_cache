@@ -1,9 +1,9 @@
-#include <iostream>
 #include <pthread.h>
 
-#include "lru_cache/lru_cache.h"
+#include <iostream>
 
 #include "catch_util.h"
+#include "lru_cache/lru_cache.h"
 #include "range_matcher_util.h"
 
 using ::Catch::Equals;
@@ -13,21 +13,22 @@ struct KeyType {
   KeyType(int i) : value(i) {}
   int value;
 
-  template <typename H> friend H AbslHashValue(H h, const KeyType &n) {
+  template <typename H>
+  friend H AbslHashValue(H h, const KeyType& n) {
     return H::combine(std::move(h), n.value);
   }
 
-  bool operator==(const KeyType &other) const { return value == other.value; }
-  bool operator!=(const KeyType &other) const { return !(*this == other); }
+  bool operator==(const KeyType& other) const { return value == other.value; }
+  bool operator!=(const KeyType& other) const { return !(*this == other); }
 };
 
-std::ostream &operator<<(std::ostream &os, const KeyType &key) {
+std::ostream& operator<<(std::ostream& os, const KeyType& key) {
   return os << key.value;
 }
 
 struct NodeLruCacheTester {
-  decltype(auto) new_cache(std::vector<KeyType> &dropped,
-                           std::vector<KeyType> &fetched) {
+  decltype(auto) new_cache(std::vector<KeyType>& dropped,
+                           std::vector<KeyType>& fetched) {
     return ::lru_cache::make_node_lru_cache<KeyType, int>(
         3,
         [&](KeyType i) {

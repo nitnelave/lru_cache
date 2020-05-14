@@ -7,9 +7,10 @@
 #ifndef LRU_CACHE_DYNAMIC_LRU_CACHE_H_
 #define LRU_CACHE_DYNAMIC_LRU_CACHE_H_
 
+#include <unordered_map>
+
 #include "lru_cache_impl.h"
 #include "vector_node_container.h"
-#include <unordered_map>
 
 namespace lru_cache {
 
@@ -51,7 +52,7 @@ class DynamicLruCache
   using NodeContainer = typename options_type::NodeContainer;
   using Map = typename options_type::Map;
 
-public:
+ public:
   static constexpr IndexType MAX_REPRESENTABLE_SIZE =
       std::numeric_limits<IndexType>::max() - 1;
   // The maximum size should be at most one less than the maximum representable
@@ -70,12 +71,12 @@ public:
     nodes_.reserve(size);
   }
 
-protected:
-  NodeContainer &node_container() { return nodes_; }
-  Map &map() { return map_; }
-  const Map &map() const { return map_; }
+ protected:
+  NodeContainer& node_container() { return nodes_; }
+  Map& map() { return map_; }
+  const Map& map() const { return map_; }
 
-  IndexType index_of(const Key &key) const {
+  IndexType index_of(const Key& key) const {
     auto it = map_.find(key);
     if (it != map_.end()) {
       return it->second;
@@ -83,7 +84,7 @@ protected:
     return NodeContainer::INVALID_INDEX;
   }
 
-private:
+ private:
   const IndexType max_size_;
   NodeContainer nodes_;
   Map map_;
@@ -104,6 +105,6 @@ make_dynamic_lru_cache(
   return {max_size, v, c};
 }
 
-} // namespace lru_cache
+}  // namespace lru_cache
 
-#endif // LRU_CACHE_DYNAMIC_LRU_CACHE_H_
+#endif  // LRU_CACHE_DYNAMIC_LRU_CACHE_H_

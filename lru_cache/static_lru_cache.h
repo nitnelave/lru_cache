@@ -7,9 +7,10 @@
 #ifndef LRU_CACHE_STATIC_LRU_CACHE_H_
 #define LRU_CACHE_STATIC_LRU_CACHE_H_
 
+#include <unordered_map>
+
 #include "array_node_container.h"
 #include "lru_cache_impl.h"
-#include <unordered_map>
 
 namespace lru_cache {
 
@@ -58,19 +59,19 @@ class StaticLruCache
   using NodeContainer = typename options_type::NodeContainer;
   using Map = typename options_type::Map;
 
-public:
+ public:
   StaticLruCache(ValueProvider value_provider,
                  DroppedEntryCallback dropped_entry_callback = {})
       : Base(std::move(value_provider), std::move(dropped_entry_callback)) {}
 
   IndexType max_size() const { return N; }
 
-protected:
-  NodeContainer &node_container() { return nodes_; }
-  Map &map() { return map_; }
-  const Map &map() const { return map_; }
+ protected:
+  NodeContainer& node_container() { return nodes_; }
+  Map& map() { return map_; }
+  const Map& map() const { return map_; }
 
-  IndexType index_of(const Key &key) const {
+  IndexType index_of(const Key& key) const {
     auto it = map_.find(key);
     if (it != map_.end()) {
       return it->second;
@@ -78,7 +79,7 @@ protected:
     return NodeContainer::INVALID_INDEX;
   }
 
-private:
+ private:
   NodeContainer nodes_;
   Map map_;
 };
@@ -95,6 +96,6 @@ make_static_lru_cache(ValueProvider v,
   return {v, c};
 }
 
-} // namespace lru_cache
+}  // namespace lru_cache
 
-#endif // LRU_CACHE_STATIC_LRU_CACHE_H_
+#endif  // LRU_CACHE_STATIC_LRU_CACHE_H_
