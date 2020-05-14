@@ -41,8 +41,7 @@ struct StaticLruCacheOptions {
 // An LRU cache based on a static, fixed-size storage (no realloc).
 template <typename Key, typename Value, typename IndexType, IndexType N,
           typename ValueProvider,
-          typename DroppedEntryCallback =
-              decltype(internal::no_op_dropped_entry_callback<Key, Value>)>
+          typename DroppedEntryCallback = void (*)(Key, Value)>
 class StaticLruCache
     : public internal::LruCacheImpl<
           StaticLruCache<Key, Value, IndexType, N, ValueProvider,
@@ -61,7 +60,8 @@ class StaticLruCache
 
  public:
   StaticLruCache(ValueProvider value_provider,
-                 DroppedEntryCallback dropped_entry_callback = {})
+                 DroppedEntryCallback dropped_entry_callback =
+                     internal::no_op_dropped_entry_callback<Key, Value>)
       : Base(std::move(value_provider), std::move(dropped_entry_callback)) {}
 
   IndexType max_size() const { return N; }
@@ -87,8 +87,7 @@ class StaticLruCache
 // Factory function for a static LRU cache.
 template <typename Key, typename Value, typename IndexType, IndexType N,
           typename ValueProvider,
-          typename DroppedEntryCallback =
-              decltype(internal::no_op_dropped_entry_callback<Key, Value>)>
+          typename DroppedEntryCallback = void (*)(Key, Value)>
 StaticLruCache<Key, Value, IndexType, N, ValueProvider, DroppedEntryCallback>
 make_static_lru_cache(ValueProvider v,
                       DroppedEntryCallback c =

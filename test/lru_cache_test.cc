@@ -110,7 +110,7 @@ TEMPLATE_PRODUCT_TEST_CASE_SIG("LRU cache works with move-only types", "[LRU]",
                                ((KeyType, std::unique_ptr<int>, 3))) {
   std::vector<int> dropped;
   auto my_lru_cache = TestType::new_cache(
-      [&](KeyType i) { return std::make_unique<int>(i.value); },
+      [](KeyType i) { return std::make_unique<int>(i.value); },
       [&](KeyType key, std::unique_ptr<int> val) {
         dropped.push_back(key.value);
       });
@@ -185,7 +185,46 @@ TEMPLATE_PRODUCT_TEST_CASE_SIG("LRU cache can be moved", "[LRU]",
                                 NodeLruCacheTester),
                                ((KeyType, int, 3))) {
   SECTION("No element get destroyed if none are constructed") {
-    auto my_lru_cache = TestType::new_cache([&](KeyType i) { return i.value; });
+    auto my_lru_cache = TestType::new_cache([](KeyType i) { return i.value; });
     auto second_cache = std::move(my_lru_cache);
+  }
+}
+
+void drop_callback(KeyType k, int v) {}
+int produce_callback(const KeyType& k) { return 3; }
+
+TEST_CASE("Explicit cache type") {
+  // Dynamic.
+  {
+    lru_cache::DynamicLruCache<KeyType, int, std::function<int(const KeyType&)>>
+        cache_function(42, [](const KeyType&) { return 3; });
+    lru_cache::DynamicLruCache<KeyType, int, int (*)(const KeyType&)> cache(
+        42, produce_callback);
+    auto made_cache =
+        lru_cache::make_dynamic_lru_cache<KeyType, int>(42, produce_callback);
+    static_assert(std::is_same_v<decltype(cache), decltype(made_cache)>);
+  }
+  // Static.
+  {
+    lru_cache::StaticLruCache<KeyType, int, uint8_t, 42,
+                              std::function<int(const KeyType&)>>
+        cache_function([](const KeyType&) { return 3; });
+    lru_cache::StaticLruCache<KeyType, int, uint8_t, 42,
+                              int (*)(const KeyType&)>
+        cache(produce_callback);
+    auto made_cache =
+        lru_cache::make_static_lru_cache<KeyType, int, uint8_t, 42>(
+            produce_callback);
+    static_assert(std::is_same_v<decltype(cache), decltype(made_cache)>);
+  }
+  // Node.
+  {
+    lru_cache::NodeLruCache<KeyType, int, std::function<int(const KeyType&)>>
+        cache_function(42, [](const KeyType&) { return 3; });
+    lru_cache::NodeLruCache<KeyType, int, int (*)(const KeyType&)> cache(
+        42, produce_callback);
+    auto made_cache =
+        lru_cache::make_node_lru_cache<KeyType, int>(42, produce_callback);
+    static_assert(std::is_same_v<decltype(cache), decltype(made_cache)>);
   }
 }

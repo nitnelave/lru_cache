@@ -133,8 +133,7 @@ struct NodeLruCacheOptions {
 
 // Set-based LRU cache, with the linked list baked in the values.
 template <typename Key, typename Value, typename ValueProvider,
-          typename DroppedEntryCallback =
-              decltype(internal::no_op_dropped_entry_callback<Key, Value>)>
+          typename DroppedEntryCallback = void (*)(Key, Value)>
 class NodeLruCache
     : public internal::LruCacheImpl<
           NodeLruCache<Key, Value, ValueProvider, DroppedEntryCallback>, Key,
@@ -180,8 +179,7 @@ class NodeLruCache
 
 // Factory for the set-based LRU cache.
 template <typename Key, typename Value, typename ValueProvider,
-          typename DroppedEntryCallback =
-              decltype(internal::no_op_dropped_entry_callback<Key, Value>)>
+          typename DroppedEntryCallback = void (*)(Key, Value)>
 NodeLruCache<Key, Value, ValueProvider, DroppedEntryCallback>
 make_node_lru_cache(size_t max_size, ValueProvider v,
                     DroppedEntryCallback c =

@@ -79,7 +79,7 @@ namespace lru_cache::internal {
 
 // If there is nothing to do when an entry is dropped, pass this as parameter.
 template <typename Key, typename Value>
-static constexpr auto no_op_dropped_entry_callback = [](Key, Value) {};
+void no_op_dropped_entry_callback(Key key, Value value) {}
 
 // Tag to tell Node to use a Node* as linked list element.
 struct self_ptr_link_tag {};
