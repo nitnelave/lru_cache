@@ -52,6 +52,7 @@ cc_test(
 cc_test(
     name = "traits_util_test",
     srcs = ["traits_util_test.cc"],
+    defines = ["CATCH_CONFIG_RUNTIME_STATIC_REQUIRE"],
     deps = [
         ":test_main",
         ":catch_util",

@@ -14,16 +14,16 @@ Return const_simple(const Arg1& a) { return {}; }
 Return const_two_arg(const Arg1& a, const Arg2& b) { return {}; }
 
 TEST_CASE("Result type works with functions", "[traits]") {
-  static_assert(std::is_same_v<return_t<decltype(&simple)>, Return>);
-  static_assert(std::is_same_v<args_t<decltype(&simple)>, std::tuple<Arg1>>);
-  static_assert(std::is_same_v<return_t<decltype(&two_arg)>, Return>);
-  static_assert(
+  STATIC_REQUIRE(std::is_same_v<return_t<decltype(&simple)>, Return>);
+  STATIC_REQUIRE(std::is_same_v<args_t<decltype(&simple)>, std::tuple<Arg1>>);
+  STATIC_REQUIRE(std::is_same_v<return_t<decltype(&two_arg)>, Return>);
+  STATIC_REQUIRE(
       std::is_same_v<args_t<decltype(&two_arg)>, std::tuple<Arg1, Arg2>>);
-  static_assert(std::is_same_v<return_t<decltype(&const_simple)>, Return>);
-  static_assert(
+  STATIC_REQUIRE(std::is_same_v<return_t<decltype(&const_simple)>, Return>);
+  STATIC_REQUIRE(
       std::is_same_v<args_t<decltype(&const_simple)>, std::tuple<const Arg1&>>);
-  static_assert(std::is_same_v<return_t<decltype(&const_two_arg)>, Return>);
-  static_assert(std::is_same_v<args_t<decltype(&const_two_arg)>,
+  STATIC_REQUIRE(std::is_same_v<return_t<decltype(&const_two_arg)>, Return>);
+  STATIC_REQUIRE(std::is_same_v<args_t<decltype(&const_two_arg)>,
                                std::tuple<const Arg1&, const Arg2&>>);
 }
 
@@ -38,16 +38,16 @@ TEST_CASE("Result type works with lambdas", "[traits]") {
     auto const_two_arg = [](const Arg1& a, const Arg2& b) -> Return {
       return {};
     };
-    static_assert(std::is_same_v<return_t<decltype(simple)>, Return>);
-    static_assert(std::is_same_v<args_t<decltype(simple)>, std::tuple<Arg1>>);
-    static_assert(std::is_same_v<return_t<decltype(two_arg)>, Return>);
-    static_assert(
+    STATIC_REQUIRE(std::is_same_v<return_t<decltype(simple)>, Return>);
+    STATIC_REQUIRE(std::is_same_v<args_t<decltype(simple)>, std::tuple<Arg1>>);
+    STATIC_REQUIRE(std::is_same_v<return_t<decltype(two_arg)>, Return>);
+    STATIC_REQUIRE(
         std::is_same_v<args_t<decltype(two_arg)>, std::tuple<Arg1, Arg2>>);
-    static_assert(std::is_same_v<return_t<decltype(const_simple)>, Return>);
-    static_assert(std::is_same_v<args_t<decltype(const_simple)>,
+    STATIC_REQUIRE(std::is_same_v<return_t<decltype(const_simple)>, Return>);
+    STATIC_REQUIRE(std::is_same_v<args_t<decltype(const_simple)>,
                                  std::tuple<const Arg1&>>);
-    static_assert(std::is_same_v<return_t<decltype(const_two_arg)>, Return>);
-    static_assert(std::is_same_v<args_t<decltype(const_two_arg)>,
+    STATIC_REQUIRE(std::is_same_v<return_t<decltype(const_two_arg)>, Return>);
+    STATIC_REQUIRE(std::is_same_v<args_t<decltype(const_two_arg)>,
                                  std::tuple<const Arg1&, const Arg2&>>);
   }
 
@@ -59,16 +59,16 @@ TEST_CASE("Result type works with lambdas", "[traits]") {
     auto const_two_arg = [&](const Arg1& a, const Arg2& b) -> Return& {
       return ret;
     };
-    static_assert(std::is_same_v<return_t<decltype(simple)>, Return&>);
-    static_assert(std::is_same_v<args_t<decltype(simple)>, std::tuple<Arg1>>);
-    static_assert(std::is_same_v<return_t<decltype(two_arg)>, Return&>);
-    static_assert(
+    STATIC_REQUIRE(std::is_same_v<return_t<decltype(simple)>, Return&>);
+    STATIC_REQUIRE(std::is_same_v<args_t<decltype(simple)>, std::tuple<Arg1>>);
+    STATIC_REQUIRE(std::is_same_v<return_t<decltype(two_arg)>, Return&>);
+    STATIC_REQUIRE(
         std::is_same_v<args_t<decltype(two_arg)>, std::tuple<Arg1, Arg2>>);
-    static_assert(std::is_same_v<return_t<decltype(const_simple)>, Return&>);
-    static_assert(std::is_same_v<args_t<decltype(const_simple)>,
+    STATIC_REQUIRE(std::is_same_v<return_t<decltype(const_simple)>, Return&>);
+    STATIC_REQUIRE(std::is_same_v<args_t<decltype(const_simple)>,
                                  std::tuple<const Arg1&>>);
-    static_assert(std::is_same_v<return_t<decltype(const_two_arg)>, Return&>);
-    static_assert(std::is_same_v<args_t<decltype(const_two_arg)>,
+    STATIC_REQUIRE(std::is_same_v<return_t<decltype(const_two_arg)>, Return&>);
+    STATIC_REQUIRE(std::is_same_v<args_t<decltype(const_two_arg)>,
                                  std::tuple<const Arg1&, const Arg2&>>);
   }
 }
@@ -90,17 +90,25 @@ struct ConstTwoArg {
 };
 
 TEST_CASE("Result type works with non-const operator in classes", "[traits]") {
-  static_assert(std::is_same_v<return_t<Simple>, Return>);
-  static_assert(std::is_same_v<args_t<Simple>, std::tuple<Arg1>>);
-  static_assert(std::is_same_v<return_t<TwoArg>, Return>);
-  static_assert(
+  STATIC_REQUIRE(std::is_same_v<return_t<Simple>, Return>);
+  STATIC_REQUIRE(std::is_same_v<args_t<Simple>, std::tuple<Arg1>>);
+  STATIC_REQUIRE(std::is_same_v<return_t<TwoArg>, Return>);
+  STATIC_REQUIRE(
                 std::is_same_v<args_t<TwoArg>, std::tuple<Arg1, Arg2>>);
-  static_assert(std::is_same_v<return_t<ConstSimple>, Return>);
-  static_assert(std::is_same_v<args_t<ConstSimple>,
+  STATIC_REQUIRE(std::is_same_v<return_t<ConstSimple>, Return>);
+  STATIC_REQUIRE(std::is_same_v<args_t<ConstSimple>,
                 std::tuple<const Arg1&>>);
-  static_assert(std::is_same_v<return_t<ConstTwoArg>, Return>);
-  static_assert(std::is_same_v<args_t<ConstTwoArg>,
+  STATIC_REQUIRE(std::is_same_v<return_t<ConstTwoArg>, Return>);
+  STATIC_REQUIRE(std::is_same_v<args_t<ConstTwoArg>,
                 std::tuple<const Arg1&, const Arg2&>>);
+}
+
+TEST_CASE("index_type_for picks the right type", "[traits]") {
+  STATIC_REQUIRE(std::is_same_v<index_type_for<3>, uint8_t>);
+  STATIC_REQUIRE(std::is_same_v<index_type_for<256>, uint16_t>);
+  STATIC_REQUIRE(std::is_same_v<index_type_for<300>, uint16_t>);
+  STATIC_REQUIRE(std::is_same_v<index_type_for<70'000>, uint32_t>);
+  STATIC_REQUIRE(std::is_same_v<index_type_for<5'000'000'000>, uint64_t>);
 }
 
 }  // namespace lru_cache::internal
