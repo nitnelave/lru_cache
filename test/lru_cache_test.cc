@@ -7,43 +7,41 @@
 #include "range_matcher_util.h"
 
 using ::Catch::Equals;
+namespace lru_cache {
 
 template <typename Key, typename Value, size_t Size>
 struct DynamicLruCacheTester {
   template <typename ValueProducer,
-            typename DroppedCallback = decltype(
-                lru_cache::internal::no_op_dropped_entry_callback<Key, Value>)>
+            typename DroppedCallback =
+                decltype(internal::no_op_dropped_entry_callback<Key, Value>)>
   static decltype(auto) new_cache(
       ValueProducer p,
-      DroppedCallback d =
-          lru_cache::internal::no_op_dropped_entry_callback<Key, Value>) {
-    return ::lru_cache::make_dynamic_lru_cache<Key, Value>(Size, p, d);
+      DroppedCallback d = internal::no_op_dropped_entry_callback<Key, Value>) {
+    return make_dynamic_lru_cache<Key, Value>(Size, p, d);
   }
 };
 
 template <typename Key, typename Value, size_t Size>
 struct StaticLruCacheTester {
   template <typename ValueProducer,
-            typename DroppedCallback = decltype(
-                lru_cache::internal::no_op_dropped_entry_callback<Key, Value>)>
+            typename DroppedCallback =
+                decltype(internal::no_op_dropped_entry_callback<Key, Value>)>
   static decltype(auto) new_cache(
       ValueProducer p,
-      DroppedCallback d =
-          lru_cache::internal::no_op_dropped_entry_callback<Key, Value>) {
-    return ::lru_cache::make_static_lru_cache<Key, Value, uint16_t, Size>(p, d);
+      DroppedCallback d = internal::no_op_dropped_entry_callback<Key, Value>) {
+    return make_static_lru_cache<Key, Value, uint16_t, Size>(p, d);
   }
 };
 
 template <typename Key, typename Value, size_t Size>
 struct NodeLruCacheTester {
   template <typename ValueProducer,
-            typename DroppedCallback = decltype(
-                lru_cache::internal::no_op_dropped_entry_callback<Key, Value>)>
+            typename DroppedCallback =
+                decltype(internal::no_op_dropped_entry_callback<Key, Value>)>
   static decltype(auto) new_cache(
       ValueProducer p,
-      DroppedCallback d =
-          lru_cache::internal::no_op_dropped_entry_callback<Key, Value>) {
-    return ::lru_cache::make_node_lru_cache<Key, Value>(Size, p, d);
+      DroppedCallback d = internal::no_op_dropped_entry_callback<Key, Value>) {
+    return make_node_lru_cache<Key, Value>(Size, p, d);
   }
 };
 
@@ -193,38 +191,53 @@ TEMPLATE_PRODUCT_TEST_CASE_SIG("LRU cache can be moved", "[LRU]",
 void drop_callback(KeyType k, int v) {}
 int produce_callback(const KeyType& k) { return 3; }
 
+struct ValueProducer {
+  ValueProducer(int i) : val_(i) {}
+
+  int operator()(const KeyType& key) { return val_; }
+
+  int val_;
+};
+
 TEST_CASE("Explicit cache type") {
   // Dynamic.
   {
-    lru_cache::DynamicLruCache<KeyType, int, std::function<int(const KeyType&)>>
+    DynamicLruCache<KeyType, int, std::function<int(const KeyType&)>>
         cache_function(42, [](const KeyType&) { return 3; });
-    lru_cache::DynamicLruCache<KeyType, int, int (*)(const KeyType&)> cache(
+    DynamicLruCache<KeyType, int, int (*)(const KeyType&)> cache(
         42, produce_callback);
     auto made_cache =
-        lru_cache::make_dynamic_lru_cache<KeyType, int>(42, produce_callback);
+        make_dynamic_lru_cache<KeyType, int>(42, produce_callback);
     static_assert(std::is_same_v<decltype(cache), decltype(made_cache)>);
+
+    DynamicLruCache<KeyType, int, ValueProducer> cache_producer =
+        make_dynamic_lru_cache<KeyType, int>(42, ValueProducer{3});
   }
   // Static.
   {
-    lru_cache::StaticLruCache<KeyType, int, uint8_t, 42,
-                              std::function<int(const KeyType&)>>
+    StaticLruCache<KeyType, int, uint8_t, 42,
+                   std::function<int(const KeyType&)>>
         cache_function([](const KeyType&) { return 3; });
-    lru_cache::StaticLruCache<KeyType, int, uint8_t, 42,
-                              int (*)(const KeyType&)>
-        cache(produce_callback);
+    StaticLruCache<KeyType, int, uint8_t, 42, int (*)(const KeyType&)> cache(
+        produce_callback);
     auto made_cache =
-        lru_cache::make_static_lru_cache<KeyType, int, uint8_t, 42>(
-            produce_callback);
+        make_static_lru_cache<KeyType, int, uint8_t, 42>(produce_callback);
     static_assert(std::is_same_v<decltype(cache), decltype(made_cache)>);
+    StaticLruCache<KeyType, int, uint8_t, 42, ValueProducer> cache_producer =
+        make_static_lru_cache<KeyType, int, uint8_t, 42>(ValueProducer{3});
   }
   // Node.
   {
-    lru_cache::NodeLruCache<KeyType, int, std::function<int(const KeyType&)>>
+    NodeLruCache<KeyType, int, std::function<int(const KeyType&)>>
         cache_function(42, [](const KeyType&) { return 3; });
-    lru_cache::NodeLruCache<KeyType, int, int (*)(const KeyType&)> cache(
-        42, produce_callback);
-    auto made_cache =
-        lru_cache::make_node_lru_cache<KeyType, int>(42, produce_callback);
+    NodeLruCache<KeyType, int, int (*)(const KeyType&)> cache(42,
+                                                              produce_callback);
+    auto made_cache = make_node_lru_cache<KeyType, int>(42, produce_callback);
     static_assert(std::is_same_v<decltype(cache), decltype(made_cache)>);
+
+    NodeLruCache<KeyType, int, ValueProducer> cache_producer =
+        make_node_lru_cache<KeyType, int>(42, ValueProducer{3});
   }
 }
+
+}  // namespace lru_cache
