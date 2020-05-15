@@ -48,3 +48,13 @@ cc_test(
         "//lru_cache:lru_cache",
     ],
 )
+
+cc_test(
+    name = "traits_util_test",
+    srcs = ["traits_util_test.cc"],
+    deps = [
+        ":test_main",
+        ":catch_util",
+        "//lru_cache:traits_util",
+    ],
+)
