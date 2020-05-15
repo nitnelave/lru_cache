@@ -1,6 +1,7 @@
 #ifndef LRU_CACHE_TRAITS_UTIL_H_
 #define LRU_CACHE_TRAITS_UTIL_H_
 
+#include <limits>
 #include <tuple>
 #include <type_traits>
 
