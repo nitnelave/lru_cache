@@ -48,10 +48,7 @@ class StaticLruCache
                          DroppedEntryCallback>,
           Key, Value, StaticLruCacheOptions<Key, Value, IndexType, N>,
           ValueProvider, DroppedEntryCallback> {
-  using Base =
-      internal::LruCacheImpl<StaticLruCache, Key, Value,
-                             StaticLruCacheOptions<Key, Value, IndexType, N>,
-                             ValueProvider, DroppedEntryCallback>;
+  using Base = typename StaticLruCache::Impl;
   friend Base;
 
   using options_type = StaticLruCacheOptions<Key, Value, IndexType, N>;

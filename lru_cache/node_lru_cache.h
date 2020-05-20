@@ -139,9 +139,7 @@ class NodeLruCache
           NodeLruCache<Key, Value, ValueProvider, DroppedEntryCallback>, Key,
           Value, NodeLruCacheOptions<Key, Value>, ValueProvider,
           DroppedEntryCallback> {
-  using Base = internal::LruCacheImpl<NodeLruCache, Key, Value,
-                                      NodeLruCacheOptions<Key, Value>,
-                                      ValueProvider, DroppedEntryCallback>;
+  using Base = typename NodeLruCache::Impl;
   friend Base;
   using options_type = NodeLruCacheOptions<Key, Value>;
   using IndexType = typename options_type::IndexType;

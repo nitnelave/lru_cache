@@ -42,9 +42,7 @@ class DynamicLruCache
           DynamicLruCache<Key, Value, ValueProvider, DroppedEntryCallback>, Key,
           Value, DynamicLruCacheOptions<Key, Value>, ValueProvider,
           DroppedEntryCallback> {
-  using Base = internal::LruCacheImpl<DynamicLruCache, Key, Value,
-                                      DynamicLruCacheOptions<Key, Value>,
-                                      ValueProvider, DroppedEntryCallback>;
+  using Base = typename DynamicLruCache::Impl;
   friend Base;
   using options_type = DynamicLruCacheOptions<Key, Value>;
   using IndexType = typename options_type::IndexType;

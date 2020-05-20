@@ -245,6 +245,9 @@ template <
         decltype(no_op_dropped_entry_callback<Key, Value>)>
 class LruCacheImpl {
  public:
+  // For easy access in the derived classes.
+  using Impl = LruCacheImpl;
+
   using IndexType = typename CacheOptions::IndexType;
 
   using Map = typename CacheOptions::Map;
