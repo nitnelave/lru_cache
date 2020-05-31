@@ -140,7 +140,6 @@ because it's the biggest element that fits in 64 bits.
 
 | Benchmark                   | fibo(60) (us) | fibo(80) (us) | fibo(92) (us) |
 |-----------------------------|---------------|---------------|---------------|
-| baseline                    | 352           | 36.3          | 355           |
 | nitnelave/lru_cache/dynamic | 4.56          | 6.09          | 7.01          |
 | nitnelave/lru_cache/static  | 4.27          | 5.96          | 6.60          |
 | nitnelave/lru_cache/node    | **3.15**      | **4.30**      | **4.91**      |
