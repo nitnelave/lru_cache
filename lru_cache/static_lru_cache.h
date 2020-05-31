@@ -90,6 +90,21 @@ make_static_lru_cache(ValueProvider v,
   return {v, c};
 }
 
+// Same as above, deducing Key and Value from the single-argument function
+// ValueProvider.
+template <size_t N, typename ValueProvider,
+          typename DroppedEntryCallback = decltype(
+              &internal::no_op_dropped_entry_callback_deduced<ValueProvider>)>
+StaticLruCache<internal::single_arg_t<ValueProvider>,
+               internal::return_t<ValueProvider>, N, ValueProvider,
+               DroppedEntryCallback>
+make_static_lru_cache_deduced(
+    ValueProvider v,
+    DroppedEntryCallback c =
+        internal::no_op_dropped_entry_callback_deduced<ValueProvider>) {
+  return {v, c};
+}
+
 }  // namespace lru_cache
 
 #endif  // LRU_CACHE_STATIC_LRU_CACHE_H_

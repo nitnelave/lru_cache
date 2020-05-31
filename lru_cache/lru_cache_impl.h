@@ -75,11 +75,18 @@
 #include <iterator>
 #include <type_traits>
 
+#include "traits_util.h"
+
 namespace lru_cache::internal {
 
 // If there is nothing to do when an entry is dropped, pass this as parameter.
 template <typename Key, typename Value>
 void no_op_dropped_entry_callback(Key key, Value value) {}
+
+// Same with argument deduction from a function-like type.
+template <typename F>
+void no_op_dropped_entry_callback_deduced(internal::single_arg_t<F> key,
+                                          internal::return_t<F> value) {}
 
 // Tag to tell Node to use a Node* as linked list element.
 struct self_ptr_link_tag {};

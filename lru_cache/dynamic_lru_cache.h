@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "lru_cache_impl.h"
+#include "traits_util.h"
 #include "vector_node_container.h"
 
 namespace lru_cache {
@@ -54,7 +55,7 @@ class DynamicLruCache
       std::numeric_limits<IndexType>::max() - 1;
   // The maximum size should be at most one less than the maximum representable
   // integer.
-  DynamicLruCache(IndexType max_size, ValueProvider value_provider,
+  DynamicLruCache(size_t max_size, ValueProvider value_provider,
                   DroppedEntryCallback dropped_entry_callback =
                       internal::no_op_dropped_entry_callback<Key, Value>)
       : Base(std::move(value_provider), std::move(dropped_entry_callback)),
@@ -62,7 +63,7 @@ class DynamicLruCache
     assert(max_size <= MAX_REPRESENTABLE_SIZE);
   }
 
-  IndexType max_size() const { return max_size_; }
+  size_t max_size() const { return max_size_; }
 
   void reserve(IndexType size) {
     assert(size <= max_size());
@@ -83,7 +84,7 @@ class DynamicLruCache
   }
 
  private:
-  const IndexType max_size_;
+  const size_t max_size_;
   NodeContainer nodes_;
   Map map_;
 };
@@ -99,6 +100,21 @@ make_dynamic_lru_cache(
     ValueProvider v,
     DroppedEntryCallback c =
         internal::no_op_dropped_entry_callback<Key, Value>) {
+  return {max_size, v, c};
+}
+
+// Same as above, deducing Key and Value from the single-argument function
+// ValueProvider.
+template <typename ValueProvider,
+          typename DroppedEntryCallback = decltype(
+              &internal::no_op_dropped_entry_callback_deduced<ValueProvider>)>
+DynamicLruCache<internal::single_arg_t<ValueProvider>,
+                internal::return_t<ValueProvider>, ValueProvider,
+                DroppedEntryCallback>
+make_dynamic_lru_cache_deduced(
+    size_t max_size, ValueProvider v,
+    DroppedEntryCallback c =
+        internal::no_op_dropped_entry_callback_deduced<ValueProvider>) {
   return {max_size, v, c};
 }
 

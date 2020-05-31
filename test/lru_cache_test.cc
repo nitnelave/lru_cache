@@ -9,48 +9,48 @@
 using ::Catch::Equals;
 namespace lru_cache {
 
-template <typename Key, typename Value, size_t Size>
+template <size_t Size>
 struct DynamicLruCacheTester {
   template <typename ValueProducer,
-            typename DroppedCallback =
-                decltype(internal::no_op_dropped_entry_callback<Key, Value>)>
+            typename DroppedCallback = decltype(
+                &internal::no_op_dropped_entry_callback_deduced<ValueProducer>)>
   static decltype(auto) new_cache(
       ValueProducer p,
-      DroppedCallback d = internal::no_op_dropped_entry_callback<Key, Value>) {
-    return make_dynamic_lru_cache<Key, Value>(Size, p, d);
+      DroppedCallback d =
+          internal::no_op_dropped_entry_callback_deduced<ValueProducer>) {
+    return make_dynamic_lru_cache_deduced(Size, p, d);
   }
 };
 
-template <typename Key, typename Value, size_t Size>
+template <size_t Size>
 struct StaticLruCacheTester {
   template <typename ValueProducer,
-            typename DroppedCallback =
-                decltype(internal::no_op_dropped_entry_callback<Key, Value>)>
+            typename DroppedCallback = decltype(
+                &internal::no_op_dropped_entry_callback_deduced<ValueProducer>)>
   static decltype(auto) new_cache(
       ValueProducer p,
-      DroppedCallback d = internal::no_op_dropped_entry_callback<Key, Value>) {
-    return make_static_lru_cache<Key, Value, Size>(p, d);
+      DroppedCallback d =
+          internal::no_op_dropped_entry_callback_deduced<ValueProducer>) {
+    return make_static_lru_cache_deduced<Size>(p, d);
   }
 };
 
-template <typename Key, typename Value, size_t Size>
+template <size_t Size>
 struct NodeLruCacheTester {
   template <typename ValueProducer,
-            typename DroppedCallback =
-                decltype(internal::no_op_dropped_entry_callback<Key, Value>)>
+            typename DroppedCallback = decltype(
+                &internal::no_op_dropped_entry_callback_deduced<ValueProducer>)>
   static decltype(auto) new_cache(
       ValueProducer p,
-      DroppedCallback d = internal::no_op_dropped_entry_callback<Key, Value>) {
-    return make_node_lru_cache<Key, Value>(Size, p, d);
+      DroppedCallback d =
+          internal::no_op_dropped_entry_callback_deduced<ValueProducer>) {
+    return make_node_lru_cache_deduced(Size, p, d);
   }
 };
 
-TEMPLATE_PRODUCT_TEST_CASE_SIG("LRU cache drops LRU entries", "[LRU]",
-                               ((typename Key, typename Value, size_t Size),
-                                Key, Value, Size),
-                               (DynamicLruCacheTester, StaticLruCacheTester,
-                                NodeLruCacheTester),
-                               ((KeyType, int, 3))) {
+TEMPLATE_TEST_CASE("LRU cache drops LRU entries", "[LRU]",
+                   DynamicLruCacheTester<3>, StaticLruCacheTester<3>,
+                   NodeLruCacheTester<3>) {
   std::vector<int> dropped;
   std::vector<int> fetched;
   auto my_lru_cache = TestType::new_cache(
@@ -100,12 +100,9 @@ TEMPLATE_PRODUCT_TEST_CASE_SIG("LRU cache drops LRU entries", "[LRU]",
   }
 }
 
-TEMPLATE_PRODUCT_TEST_CASE_SIG("LRU cache works with move-only types", "[LRU]",
-                               ((typename Key, typename Value, size_t Size),
-                                Key, Value, Size),
-                               (DynamicLruCacheTester, StaticLruCacheTester,
-                                NodeLruCacheTester),
-                               ((KeyType, std::unique_ptr<int>, 3))) {
+TEMPLATE_TEST_CASE("LRU cache works with move-only types", "[LRU]",
+                   DynamicLruCacheTester<3>, StaticLruCacheTester<3>,
+                   NodeLruCacheTester<3>) {
   std::vector<int> dropped;
   auto my_lru_cache = TestType::new_cache(
       [](KeyType i) { return std::make_unique<int>(i.value); },
@@ -145,11 +142,9 @@ struct DestructorCounter {
   DestructionStats* stats_ = nullptr;
 };
 
-TEMPLATE_PRODUCT_TEST_CASE_SIG(
-    "LRU cache works with non-default-constructible types", "[LRU]",
-    ((typename Key, typename Value, size_t Size), Key, Value, Size),
-    (DynamicLruCacheTester, StaticLruCacheTester, NodeLruCacheTester),
-    ((KeyType, DestructorCounter, 3))) {
+TEMPLATE_TEST_CASE("LRU cache works with non-default-constructible types",
+                   "[LRU]", DynamicLruCacheTester<3>, StaticLruCacheTester<3>,
+                   NodeLruCacheTester<3>) {
   DestructionStats stats;
   SECTION("No element get destroyed if none are constructed") {
     {
@@ -175,13 +170,9 @@ TEMPLATE_PRODUCT_TEST_CASE_SIG(
   }
 }
 
-TEMPLATE_PRODUCT_TEST_CASE_SIG("LRU cache can be moved", "[LRU]",
-                               ((typename Key, typename Value, size_t Size),
-                                Key, Value, Size),
-                               (DynamicLruCacheTester,
-                                // StaticLruCacheTester is not moveable.
-                                NodeLruCacheTester),
-                               ((KeyType, int, 3))) {
+TEMPLATE_TEST_CASE("LRU cache can be moved", "[LRU]", DynamicLruCacheTester<3>,
+                   // StaticLruCacheTester is not moveable.
+                   NodeLruCacheTester<3>) {
   SECTION("No element get destroyed if none are constructed") {
     auto my_lru_cache = TestType::new_cache([](KeyType i) { return i.value; });
     auto second_cache = std::move(my_lru_cache);
@@ -211,7 +202,7 @@ TEST_CASE("Explicit cache type") {
     static_assert(std::is_same_v<decltype(cache), decltype(made_cache)>);
 
     DynamicLruCache<KeyType, int, ValueProducer> cache_producer =
-        make_dynamic_lru_cache<KeyType, int>(42, ValueProducer{3});
+        make_dynamic_lru_cache_deduced(42, ValueProducer{3});
   }
   // Static.
   {
@@ -222,7 +213,7 @@ TEST_CASE("Explicit cache type") {
     auto made_cache = make_static_lru_cache<KeyType, int, 42>(produce_callback);
     static_assert(std::is_same_v<decltype(cache), decltype(made_cache)>);
     StaticLruCache<KeyType, int, 42, ValueProducer> cache_producer =
-        make_static_lru_cache<KeyType, int, 42>(ValueProducer{3});
+        make_static_lru_cache_deduced<42>(ValueProducer{3});
   }
   // Node.
   {
@@ -234,7 +225,7 @@ TEST_CASE("Explicit cache type") {
     static_assert(std::is_same_v<decltype(cache), decltype(made_cache)>);
 
     NodeLruCache<KeyType, int, ValueProducer> cache_producer =
-        make_node_lru_cache<KeyType, int>(42, ValueProducer{3});
+        make_node_lru_cache_deduced(42, ValueProducer{3});
   }
 }
 

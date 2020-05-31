@@ -13,6 +13,7 @@
 
 #include "absl/container/node_hash_set.h"
 #include "lru_cache_impl.h"
+#include "traits_util.h"
 
 namespace lru_cache {
 
@@ -182,6 +183,21 @@ NodeLruCache<Key, Value, ValueProvider, DroppedEntryCallback>
 make_node_lru_cache(size_t max_size, ValueProvider v,
                     DroppedEntryCallback c =
                         internal::no_op_dropped_entry_callback<Key, Value>) {
+  return {max_size, v, c};
+}
+
+// Same as above, deducing Key and Value from the single-argument function
+// ValueProvider.
+template <typename ValueProvider,
+          typename DroppedEntryCallback = decltype(
+              &internal::no_op_dropped_entry_callback_deduced<ValueProvider>)>
+NodeLruCache<internal::single_arg_t<ValueProvider>,
+             internal::return_t<ValueProvider>, ValueProvider,
+             DroppedEntryCallback>
+make_node_lru_cache_deduced(
+    size_t max_size, ValueProvider v,
+    DroppedEntryCallback c =
+        internal::no_op_dropped_entry_callback_deduced<ValueProvider>) {
   return {max_size, v, c};
 }
 

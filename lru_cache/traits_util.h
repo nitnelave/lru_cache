@@ -34,6 +34,15 @@ using return_t = typename function_info<F>::return_type;
 template <typename F>
 using args_t = typename function_info<F>::args_type;
 
+// Resolves to the unqualified type of the only argument of F, or void
+// otherwise.
+template <typename F>
+using single_arg_t =
+    std::conditional_t<std::tuple_size_v<args_t<F>> == 1,
+                       std::remove_cv_t<std::remove_reference_t<
+                           std::tuple_element_t<0, args_t<F>>>>,
+                       void>;
+
 template <size_t N, typename T>
 static constexpr size_t is_representable =
     N <= static_cast<size_t>(std::numeric_limits<T>::max());

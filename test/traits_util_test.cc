@@ -25,6 +25,9 @@ TEST_CASE("Result type works with functions", "[traits]") {
   STATIC_REQUIRE(std::is_same_v<return_t<decltype(&const_two_arg)>, Return>);
   STATIC_REQUIRE(std::is_same_v<args_t<decltype(&const_two_arg)>,
                                 std::tuple<const Arg1&, const Arg2&>>);
+
+  STATIC_REQUIRE(std::is_same_v<single_arg_t<decltype(&simple)>, Arg1>);
+  STATIC_REQUIRE(std::is_same_v<single_arg_t<decltype(&const_simple)>, Arg1>);
 }
 
 template <typename T>
