@@ -223,6 +223,8 @@ TEST_CASE("Explicit cache type") {
                                                               produce_callback);
     auto made_cache = make_node_lru_cache<KeyType, int>(42, produce_callback);
     static_assert(std::is_same_v<decltype(cache), decltype(made_cache)>);
+    static_assert(std::is_same_v<decltype(cache), decltype(memoize_function(42, produce_callback))>);
+    static_assert(std::is_same_v<NodeLruCache<KeyType, int>, decltype(make_cache<KeyType, int>(42))>);
 
     NodeLruCache<KeyType, int, ValueProducer> cache_producer =
         make_node_lru_cache_deduced(42, ValueProducer{3});

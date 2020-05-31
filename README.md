@@ -16,7 +16,7 @@ int very_expensive_function(int key) {
 
 int main() {
   // Keep up to 100 calls. The type of the cache is deduced from the function.
-  auto memoized = lru_cache::make_node_lru_cache_deduced(100, very_expensive_function);
+  auto memoized = lru_cache::memoize_function(100, very_expensive_function);
   for (int i = 0; i < 1000; ++i) {
     // Automatically calls very_expensive_function if the key is not in the
     // cache.
@@ -45,7 +45,7 @@ size_t cached_fibo(int n, Cache& cache) {
 
 int main() {
   // Cache 10 elements.
-  auto cache = lru_cache::make_node_lru_cache<int, size_t>(10);
+  auto cache = lru_cache::make_cache<int, size_t>(10);
   // Quick computation.
   size_t result = cached_fibo(60, cache);
 }
@@ -60,7 +60,7 @@ There are 3 configurations available out of the box:
   - `StaticLruCache`, similar except that the vector is replaced by a
     `std::array`-like structure, allowing you to prevent reallocation, and hold
     the memory for the values on the stack if you want.
-  - `NodeLruCache`, consisting of an
+  - `NodeLruCache`, the default, consisting of an
     [`absl::node_hash_set`](https://abseil.io/docs/cpp/guides/container#abslnode_hash_map-and-abslnode_hash_set)
     containing the key, the value and the linked list in the nodes.
 
