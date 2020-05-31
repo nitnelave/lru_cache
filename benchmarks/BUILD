@@ -58,3 +58,14 @@ cc_test(
         ":bench_main",
     ],
 )
+
+cc_test(
+    name = "fibo",
+    srcs = ["fibo.cc"],
+    deps = [
+        ":adapters",
+        ":catch_util",
+        "//:lru_cache",
+        ":bench_main",
+    ],
+)

@@ -2,6 +2,7 @@
 #define LRU_CACHE_BENCHMARKS_GOLDSBOROUGH_ADAPTER_
 
 #include "lru/lru.hpp"
+#include "lru_cache/default_providers.h"
 
 namespace lru_cache {
 
@@ -18,14 +19,25 @@ class GoldsboroughLruCache {
     return cache_.emplace(key, callback_(key)).second->value();
   }
 
+  const Value* get_or_null(const Key& key) {
+    auto it = cache_.find(key);
+    if (cache_.is_valid(it)) return &it->value();
+    return nullptr;
+  }
+
+  void insert(const Key& key, Value v) { cache_.insert(key, std::move(v)); }
+
  private:
   ::LRU::Cache<Key, Value> cache_{Size};
   ValueProvider callback_;
 };
 
-template <typename Key, typename Value, size_t Size, typename ValueProvider>
+template <typename Key, typename Value, size_t Size,
+          typename ValueProvider =
+              decltype(&internal::throwing_value_producer<Key, Value>)>
 GoldsboroughLruCache<Key, Value, Size, ValueProvider>
-make_goldsborough_lru_cache(ValueProvider provider) {
+make_goldsborough_lru_cache(
+    ValueProvider provider = internal::throwing_value_producer<Key, Value>) {
   return {std::move(provider)};
 }
 

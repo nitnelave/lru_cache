@@ -9,12 +9,23 @@ cc_library(
         ":dynamic_lru_cache",
         ":node_lru_cache",
         ":static_lru_cache",
+        ":default_providers",
     ],
 )
 
 cc_library(
     name = "lru_cache_impl",
     hdrs = ["lru_cache_impl.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":exception",
+        ":traits_util",
+    ],
+)
+
+cc_library(
+    name = "default_providers",
+    hdrs = ["default_providers.h"],
     visibility = ["//visibility:public"],
     deps = [
         ":exception",
