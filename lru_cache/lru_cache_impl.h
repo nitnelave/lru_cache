@@ -283,6 +283,7 @@ class LruCacheImpl {
   // provider will be called to get the value, and it will be added to the
   // cache. That might cause the LRU entry to be dropped.
   const Value& operator[](const Key& key) { return get(key); }
+  const Value& operator()(const Key& key) { return get(key); }
 
   const Value& get(const Key& key) {
     const Value* value_or_null = get_or_null(key);
