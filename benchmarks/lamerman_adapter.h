@@ -3,10 +3,9 @@
 
 #include <lrucache.hpp>
 
-namespace lru_cache
-{
+namespace lru_cache {
 
-template<typename Key, typename Value, size_t Size, typename ValueProvider>
+template <typename Key, typename Value, size_t Size, typename ValueProvider>
 class LamermanLruCache {
  public:
   LamermanLruCache(ValueProvider callback) : callback_(std::move(callback)) {}
@@ -25,8 +24,8 @@ class LamermanLruCache {
 };
 
 template <typename Key, typename Value, size_t Size, typename ValueProvider>
-LamermanLruCache<Key, Value, Size, ValueProvider>
-make_lamerman_lru_cache(ValueProvider provider) {
+LamermanLruCache<Key, Value, Size, ValueProvider> make_lamerman_lru_cache(
+    ValueProvider provider) {
   return {std::move(provider)};
 }
 

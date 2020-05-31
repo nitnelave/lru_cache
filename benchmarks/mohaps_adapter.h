@@ -3,10 +3,9 @@
 
 #include "LRUCache11.hpp"
 
-namespace lru_cache
-{
+namespace lru_cache {
 
-template<typename Key, typename Value, size_t Size, typename ValueProvider>
+template <typename Key, typename Value, size_t Size, typename ValueProvider>
 class MohapsLruCache {
  public:
   MohapsLruCache(ValueProvider callback) : callback_(std::move(callback)) {}
@@ -25,12 +24,11 @@ class MohapsLruCache {
 };
 
 template <typename Key, typename Value, size_t Size, typename ValueProvider>
-MohapsLruCache<Key, Value, Size, ValueProvider>
-make_mohaps_lru_cache(ValueProvider provider) {
+MohapsLruCache<Key, Value, Size, ValueProvider> make_mohaps_lru_cache(
+    ValueProvider provider) {
   return {std::move(provider)};
 }
 
 }  // namespace lru_cache
 
 #endif  // LRU_CACHE_BENCHMARKS_MOHAPS_ADAPTER_
-

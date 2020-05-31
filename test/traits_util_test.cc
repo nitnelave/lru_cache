@@ -24,7 +24,7 @@ TEST_CASE("Result type works with functions", "[traits]") {
       std::is_same_v<args_t<decltype(&const_simple)>, std::tuple<const Arg1&>>);
   STATIC_REQUIRE(std::is_same_v<return_t<decltype(&const_two_arg)>, Return>);
   STATIC_REQUIRE(std::is_same_v<args_t<decltype(&const_two_arg)>,
-                               std::tuple<const Arg1&, const Arg2&>>);
+                                std::tuple<const Arg1&, const Arg2&>>);
 }
 
 template <typename T>
@@ -45,10 +45,10 @@ TEST_CASE("Result type works with lambdas", "[traits]") {
         std::is_same_v<args_t<decltype(two_arg)>, std::tuple<Arg1, Arg2>>);
     STATIC_REQUIRE(std::is_same_v<return_t<decltype(const_simple)>, Return>);
     STATIC_REQUIRE(std::is_same_v<args_t<decltype(const_simple)>,
-                                 std::tuple<const Arg1&>>);
+                                  std::tuple<const Arg1&>>);
     STATIC_REQUIRE(std::is_same_v<return_t<decltype(const_two_arg)>, Return>);
     STATIC_REQUIRE(std::is_same_v<args_t<decltype(const_two_arg)>,
-                                 std::tuple<const Arg1&, const Arg2&>>);
+                                  std::tuple<const Arg1&, const Arg2&>>);
   }
 
   {
@@ -66,10 +66,10 @@ TEST_CASE("Result type works with lambdas", "[traits]") {
         std::is_same_v<args_t<decltype(two_arg)>, std::tuple<Arg1, Arg2>>);
     STATIC_REQUIRE(std::is_same_v<return_t<decltype(const_simple)>, Return&>);
     STATIC_REQUIRE(std::is_same_v<args_t<decltype(const_simple)>,
-                                 std::tuple<const Arg1&>>);
+                                  std::tuple<const Arg1&>>);
     STATIC_REQUIRE(std::is_same_v<return_t<decltype(const_two_arg)>, Return&>);
     STATIC_REQUIRE(std::is_same_v<args_t<decltype(const_two_arg)>,
-                                 std::tuple<const Arg1&, const Arg2&>>);
+                                  std::tuple<const Arg1&, const Arg2&>>);
   }
 }
 
@@ -93,14 +93,12 @@ TEST_CASE("Result type works with non-const operator in classes", "[traits]") {
   STATIC_REQUIRE(std::is_same_v<return_t<Simple>, Return>);
   STATIC_REQUIRE(std::is_same_v<args_t<Simple>, std::tuple<Arg1>>);
   STATIC_REQUIRE(std::is_same_v<return_t<TwoArg>, Return>);
-  STATIC_REQUIRE(
-                std::is_same_v<args_t<TwoArg>, std::tuple<Arg1, Arg2>>);
+  STATIC_REQUIRE(std::is_same_v<args_t<TwoArg>, std::tuple<Arg1, Arg2>>);
   STATIC_REQUIRE(std::is_same_v<return_t<ConstSimple>, Return>);
-  STATIC_REQUIRE(std::is_same_v<args_t<ConstSimple>,
-                std::tuple<const Arg1&>>);
+  STATIC_REQUIRE(std::is_same_v<args_t<ConstSimple>, std::tuple<const Arg1&>>);
   STATIC_REQUIRE(std::is_same_v<return_t<ConstTwoArg>, Return>);
   STATIC_REQUIRE(std::is_same_v<args_t<ConstTwoArg>,
-                std::tuple<const Arg1&, const Arg2&>>);
+                                std::tuple<const Arg1&, const Arg2&>>);
 }
 
 TEST_CASE("index_type_for picks the right type", "[traits]") {

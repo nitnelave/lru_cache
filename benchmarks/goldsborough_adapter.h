@@ -3,13 +3,13 @@
 
 #include "lru/lru.hpp"
 
-namespace lru_cache
-{
+namespace lru_cache {
 
-template<typename Key, typename Value, size_t Size, typename ValueProvider>
+template <typename Key, typename Value, size_t Size, typename ValueProvider>
 class GoldsboroughLruCache {
  public:
-  GoldsboroughLruCache(ValueProvider callback) : callback_(std::move(callback)) {}
+  GoldsboroughLruCache(ValueProvider callback)
+      : callback_(std::move(callback)) {}
 
   const Value& operator[](const Key& key) {
     if (cache_.contains(key)) {
@@ -32,6 +32,3 @@ make_goldsborough_lru_cache(ValueProvider provider) {
 }  // namespace lru_cache
 
 #endif  // LRU_CACHE_BENCHMARKS_GOLDSBOROUGH_ADAPTER_
-
-
-

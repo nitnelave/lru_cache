@@ -4,10 +4,9 @@
 #include "cache.hpp"
 #include "lru_cache_policy.hpp"
 
-namespace lru_cache
-{
+namespace lru_cache {
 
-template<typename Key, typename Value, size_t Size, typename ValueProvider>
+template <typename Key, typename Value, size_t Size, typename ValueProvider>
 class VpetrigoLruCache {
  public:
   VpetrigoLruCache(ValueProvider callback) : callback_(std::move(callback)) {}
@@ -21,20 +20,17 @@ class VpetrigoLruCache {
   }
 
  private:
-  ::caches::fixed_sized_cache<Key, Value, ::caches::LRUCachePolicy<Key>>
-    cache_{Size};
+  ::caches::fixed_sized_cache<Key, Value, ::caches::LRUCachePolicy<Key>> cache_{
+      Size};
   ValueProvider callback_;
 };
 
 template <typename Key, typename Value, size_t Size, typename ValueProvider>
-VpetrigoLruCache<Key, Value, Size, ValueProvider>
-make_vpetrigo_lru_cache(ValueProvider provider) {
+VpetrigoLruCache<Key, Value, Size, ValueProvider> make_vpetrigo_lru_cache(
+    ValueProvider provider) {
   return {std::move(provider)};
 }
 
 }  // namespace lru_cache
 
 #endif  // LRU_CACHE_BENCHMARKS_VPETRIGO_ADAPTER_
-
-
-
