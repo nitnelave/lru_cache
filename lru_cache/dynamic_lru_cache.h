@@ -36,7 +36,9 @@ struct DynamicLruCacheOptions {
 };
 
 // An LRU cache based on a vector that will grow until the max_size.
-template <typename Key, typename Value, typename ValueProvider,
+template <typename Key, typename Value,
+          typename ValueProvider =
+              decltype(&internal::throwing_value_producer<Key, Value>),
           typename DroppedEntryCallback = void (*)(Key, Value)>
 class DynamicLruCache
     : public internal::LruCacheImpl<
@@ -55,7 +57,9 @@ class DynamicLruCache
       std::numeric_limits<IndexType>::max() - 1;
   // The maximum size should be at most one less than the maximum representable
   // integer.
-  DynamicLruCache(size_t max_size, ValueProvider value_provider,
+  DynamicLruCache(size_t max_size,
+                  ValueProvider value_provider =
+                      internal::throwing_value_producer<Key, Value>,
                   DroppedEntryCallback dropped_entry_callback =
                       internal::no_op_dropped_entry_callback<Key, Value>)
       : Base(std::move(value_provider), std::move(dropped_entry_callback)),
@@ -92,12 +96,14 @@ class DynamicLruCache
 // Factory function for a dynamic LRU cache.
 // The maximum size should be at most one less than the maximum representable
 // integer.
-template <typename Key, typename Value, typename ValueProvider,
+template <typename Key, typename Value,
+          typename ValueProvider =
+              decltype(&internal::throwing_value_producer<Key, Value>),
           typename DroppedEntryCallback = void (*)(Key, Value)>
 DynamicLruCache<Key, Value, ValueProvider, DroppedEntryCallback>
 make_dynamic_lru_cache(
     typename DynamicLruCacheOptions<Key, Value>::IndexType max_size,
-    ValueProvider v,
+    ValueProvider v = internal::throwing_value_producer<Key, Value>,
     DroppedEntryCallback c =
         internal::no_op_dropped_entry_callback<Key, Value>) {
   return {max_size, v, c};

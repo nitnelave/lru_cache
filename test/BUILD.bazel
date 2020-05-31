@@ -19,6 +19,12 @@ cc_library(
 )
 
 cc_library(
+    name = "pointer_matcher_util",
+    hdrs = ["pointer_matcher_util.h"],
+    deps = [":catch_util"],
+)
+
+cc_library(
     name = "key_type",
     hdrs = ["key_type.h"],
 )
@@ -45,6 +51,19 @@ cc_test(
         ":catch_util",
         ":key_type",
         ":range_matcher_util",
+        "//lru_cache:lru_cache",
+    ],
+)
+
+cc_test(
+    name = "throwing_provider_test",
+    srcs = ["throwing_provider_test.cc"],
+    deps = [
+        ":test_main",
+        ":catch_util",
+        ":key_type",
+        ":range_matcher_util",
+        ":pointer_matcher_util",
         "//lru_cache:lru_cache",
     ],
 )

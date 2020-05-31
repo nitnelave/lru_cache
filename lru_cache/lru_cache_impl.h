@@ -75,9 +75,16 @@
 #include <iterator>
 #include <type_traits>
 
+#include "exception.h"
 #include "traits_util.h"
 
 namespace lru_cache::internal {
+
+// To handle value creation manually, throw when a key is missing.
+template <typename Key, typename Value>
+Value throwing_value_producer(const Key& key) {
+  throw KeyNotFound(key);
+}
 
 // If there is nothing to do when an entry is dropped, pass this as parameter.
 template <typename Key, typename Value>
@@ -246,10 +253,10 @@ template <
     // Type of the function that fetches a new value given the key. If
     // the function type is impossible to write (e.g. lambda) this can be
     // replaced by std::function, but at a performance cost.
-    typename ValueProvider,
+    typename ValueProvider = decltype(&throwing_value_producer<Key, Value>),
     // The type of the function called when a value is dropped.
     typename DroppedEntryCallback =
-        decltype(no_op_dropped_entry_callback<Key, Value>)>
+        decltype(&no_op_dropped_entry_callback<Key, Value>)>
 class LruCacheImpl {
  public:
   // For easy access in the derived classes.
@@ -271,8 +278,10 @@ class LruCacheImpl {
 
   static constexpr IndexType INVALID_INDEX = linked_list::INVALID_INDEX;
 
-  LruCacheImpl(ValueProvider value_provider,
-               DroppedEntryCallback dropped_entry_callback)
+  LruCacheImpl(
+      ValueProvider value_provider = throwing_value_producer<Key, Value>,
+      DroppedEntryCallback dropped_entry_callback =
+          no_op_dropped_entry_callback<Key, Value>)
       : value_list_(node_container()),
         value_provider_(std::move(value_provider)),
         dropped_entry_callback_(std::move(dropped_entry_callback)) {}
@@ -288,18 +297,30 @@ class LruCacheImpl {
   // Get the value for the given key. If the key is not in the cache, the value
   // provider will be called to get the value, and it will be added to the
   // cache. That might cause the LRU entry to be dropped.
-  const Value& operator[](const Key& key) {
-    IndexType index = index_of(key);
-    if (index != INVALID_INDEX) {
-      node_type& node = value_list_[index];
-      if constexpr (ByAccessOrder) {
-        // Update the last access order.
-        value_list_.move_to_front(index);
-      }
-      return node.value();
-    }
+  const Value& operator[](const Key& key) { return get(key); }
+
+  const Value& get(const Key& key) {
+    const Value* value_or_null = get_or_null(key);
+    if (value_or_null != nullptr) return *value_or_null;
     // Fetch the value.
     Value new_value = value_provider_(key);
+    return insert(key, std::move(new_value));
+  }
+
+  const Value* get_or_null(const Key& key) {
+    IndexType index = index_of(key);
+    if (index == INVALID_INDEX) {
+      return nullptr;
+    }
+    node_type& node = value_list_[index];
+    if constexpr (ByAccessOrder) {
+      // Update the last access order.
+      value_list_.move_to_front(index);
+    }
+    return &node.value();
+  }
+
+  const Value& insert(const Key& key, Value new_value) {
     if (max_size() == size()) {
       // Cache is full, drop the last entry and replace it.
       return replace_oldest_entry(key, std::move(new_value));

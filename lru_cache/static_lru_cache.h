@@ -39,7 +39,9 @@ struct StaticLruCacheOptions {
 };
 
 // An LRU cache based on a static, fixed-size storage (no realloc).
-template <typename Key, typename Value, size_t N, typename ValueProvider,
+template <typename Key, typename Value, size_t N,
+          typename ValueProvider =
+              decltype(&internal::throwing_value_producer<Key, Value>),
           typename DroppedEntryCallback = void (*)(Key, Value)>
 class StaticLruCache
     : public internal::LruCacheImpl<
@@ -55,7 +57,8 @@ class StaticLruCache
   using Map = typename options_type::Map;
 
  public:
-  StaticLruCache(ValueProvider value_provider,
+  StaticLruCache(ValueProvider value_provider =
+                     internal::throwing_value_producer<Key, Value>,
                  DroppedEntryCallback dropped_entry_callback =
                      internal::no_op_dropped_entry_callback<Key, Value>)
       : Base(std::move(value_provider), std::move(dropped_entry_callback)) {}
@@ -81,12 +84,15 @@ class StaticLruCache
 };
 
 // Factory function for a static LRU cache.
-template <typename Key, typename Value, size_t N, typename ValueProvider,
+template <typename Key, typename Value, size_t N,
+          typename ValueProvider =
+              decltype(&internal::throwing_value_producer<Key, Value>),
           typename DroppedEntryCallback = void (*)(Key, Value)>
 StaticLruCache<Key, Value, N, ValueProvider, DroppedEntryCallback>
-make_static_lru_cache(ValueProvider v,
-                      DroppedEntryCallback c =
-                          internal::no_op_dropped_entry_callback<Key, Value>) {
+make_static_lru_cache(
+    ValueProvider v = internal::throwing_value_producer<Key, Value>,
+    DroppedEntryCallback c =
+        internal::no_op_dropped_entry_callback<Key, Value>) {
   return {v, c};
 }
 

@@ -133,7 +133,9 @@ struct NodeLruCacheOptions {
 };
 
 // Set-based LRU cache, with the linked list baked in the values.
-template <typename Key, typename Value, typename ValueProvider,
+template <typename Key, typename Value,
+          typename ValueProvider =
+              decltype(&internal::throwing_value_producer<Key, Value>),
           typename DroppedEntryCallback = void (*)(Key, Value)>
 class NodeLruCache
     : public internal::LruCacheImpl<
@@ -149,8 +151,11 @@ class NodeLruCache
   using Node = typename options_type::Node;
 
  public:
-  NodeLruCache(size_t max_size, ValueProvider value_provider,
-               DroppedEntryCallback dropped_entry_callback = {})
+  NodeLruCache(size_t max_size,
+               ValueProvider value_provider =
+                   internal::throwing_value_producer<Key, Value>,
+               DroppedEntryCallback dropped_entry_callback =
+                   internal::no_op_dropped_entry_callback<Key, Value>)
       : Base(std::move(value_provider), std::move(dropped_entry_callback)),
         max_size_(max_size),
         nodes_(map_) {}
@@ -177,12 +182,16 @@ class NodeLruCache
 };
 
 // Factory for the set-based LRU cache.
-template <typename Key, typename Value, typename ValueProvider,
+template <typename Key, typename Value,
+          typename ValueProvider =
+              decltype(&internal::throwing_value_producer<Key, Value>),
           typename DroppedEntryCallback = void (*)(Key, Value)>
 NodeLruCache<Key, Value, ValueProvider, DroppedEntryCallback>
-make_node_lru_cache(size_t max_size, ValueProvider v,
-                    DroppedEntryCallback c =
-                        internal::no_op_dropped_entry_callback<Key, Value>) {
+make_node_lru_cache(
+    size_t max_size,
+    ValueProvider v = internal::throwing_value_producer<Key, Value>,
+    DroppedEntryCallback c =
+        internal::no_op_dropped_entry_callback<Key, Value>) {
   return {max_size, v, c};
 }
 
