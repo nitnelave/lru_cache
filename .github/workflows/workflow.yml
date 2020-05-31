@@ -25,3 +25,6 @@ jobs:
 
       - name: Test
         run: ./bin/bazel test test:all
+
+      - name: Check benchmarks
+        run: ./bin/bazel build benchmarks:all
