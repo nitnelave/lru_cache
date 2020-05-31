@@ -19,9 +19,14 @@ size_t cached_fibo(int n, Cache& cache) {
   return result;
 }
 
-TEST_CASE("Benchmark fibo", "[benchmarks]") {
+template <size_t N>
+struct FiboValue {
+  static constexpr size_t value = N;
+};
+
+TEMPLATE_TEST_CASE("Benchmark fibo", "[benchmarks]", FiboValue<60>, FiboValue<80>, FiboValue<92>) {
   static constexpr size_t CACHE_SIZE = 10;
-  static constexpr size_t VALUE = 60;
+  static constexpr size_t VALUE = TestType::value;
   BENCHMARK("nitnelave/lru_cache/dynamic") {
     auto cache = make_dynamic_lru_cache<int, size_t>(CACHE_SIZE);
     return cached_fibo(VALUE, cache);
