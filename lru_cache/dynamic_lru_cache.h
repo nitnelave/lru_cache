@@ -16,7 +16,7 @@ namespace lru_cache {
 
 // Options for a dynamic LRU cache with a maximum size.
 // The index_type should be an unsigned integer.
-template <typename Key, typename Value, typename index_type = uint16_t,
+template <typename Key, typename Value, typename index_type = uint32_t,
           bool by_access_order = true>
 struct DynamicLruCacheOptions {
   using IndexType = index_type;
