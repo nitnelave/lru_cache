@@ -34,13 +34,16 @@ using return_t = typename function_info<F>::return_type;
 template <typename F>
 using args_t = typename function_info<F>::args_type;
 
+template <size_t N, typename T>
+static constexpr size_t is_representable =
+    N <= static_cast<size_t>(std::numeric_limits<T>::max());
+
 template <size_t N>
 using index_type_for = std::conditional_t<
-    (N < std::numeric_limits<uint8_t>::max()), uint8_t,
+    is_representable<N, uint8_t>, uint8_t,
     std::conditional_t<
-        (N < std::numeric_limits<uint16_t>::max()), uint16_t,
-        std::conditional_t<(N < std::numeric_limits<uint32_t>::max()), uint32_t,
-                           uint64_t>>>;
+        is_representable<N, uint16_t>, uint16_t,
+        std::conditional_t<is_representable<N, uint32_t>, uint32_t, uint64_t>>>;
 
 }  // namespace lru_cache::internal
 #endif  // LRU_CACHE_TRAITS_UTIL_H_

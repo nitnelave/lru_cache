@@ -29,7 +29,7 @@ struct StaticLruCacheTester {
   static decltype(auto) new_cache(
       ValueProducer p,
       DroppedCallback d = internal::no_op_dropped_entry_callback<Key, Value>) {
-    return make_static_lru_cache<Key, Value, uint16_t, Size>(p, d);
+    return make_static_lru_cache<Key, Value, Size>(p, d);
   }
 };
 
@@ -215,16 +215,14 @@ TEST_CASE("Explicit cache type") {
   }
   // Static.
   {
-    StaticLruCache<KeyType, int, uint8_t, 42,
-                   std::function<int(const KeyType&)>>
+    StaticLruCache<KeyType, int, 42, std::function<int(const KeyType&)>>
         cache_function([](const KeyType&) { return 3; });
-    StaticLruCache<KeyType, int, uint8_t, 42, int (*)(const KeyType&)> cache(
+    StaticLruCache<KeyType, int, 42, int (*)(const KeyType&)> cache(
         produce_callback);
-    auto made_cache =
-        make_static_lru_cache<KeyType, int, uint8_t, 42>(produce_callback);
+    auto made_cache = make_static_lru_cache<KeyType, int, 42>(produce_callback);
     static_assert(std::is_same_v<decltype(cache), decltype(made_cache)>);
-    StaticLruCache<KeyType, int, uint8_t, 42, ValueProducer> cache_producer =
-        make_static_lru_cache<KeyType, int, uint8_t, 42>(ValueProducer{3});
+    StaticLruCache<KeyType, int, 42, ValueProducer> cache_producer =
+        make_static_lru_cache<KeyType, int, 42>(ValueProducer{3});
   }
   // Node.
   {

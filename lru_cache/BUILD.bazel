@@ -47,6 +47,7 @@ cc_library(
     deps = [
         ":lru_cache_impl",
         ":array_node_container",
+        ":traits_util",
     ],
 )
 

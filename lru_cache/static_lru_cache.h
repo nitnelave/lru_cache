@@ -11,15 +11,15 @@
 
 #include "array_node_container.h"
 #include "lru_cache_impl.h"
+#include "traits_util.h"
 
 namespace lru_cache {
 
 // Options for a static (fixed-size) LRU cache, of size N.
 // The index_type should be an unsigned integer.
-template <typename Key, typename Value, typename index_type, index_type N,
-          bool by_access_order = true>
+template <typename Key, typename Value, size_t N, bool by_access_order = true>
 struct StaticLruCacheOptions {
-  using IndexType = index_type;
+  using IndexType = internal::index_type_for<N>;
 
   static_assert(std::numeric_limits<IndexType>::is_integer,
                 "IndexType should be an integer.");
@@ -39,19 +39,18 @@ struct StaticLruCacheOptions {
 };
 
 // An LRU cache based on a static, fixed-size storage (no realloc).
-template <typename Key, typename Value, typename IndexType, IndexType N,
-          typename ValueProvider,
+template <typename Key, typename Value, size_t N, typename ValueProvider,
           typename DroppedEntryCallback = void (*)(Key, Value)>
 class StaticLruCache
     : public internal::LruCacheImpl<
-          StaticLruCache<Key, Value, IndexType, N, ValueProvider,
-                         DroppedEntryCallback>,
-          Key, Value, StaticLruCacheOptions<Key, Value, IndexType, N>,
-          ValueProvider, DroppedEntryCallback> {
+          StaticLruCache<Key, Value, N, ValueProvider, DroppedEntryCallback>,
+          Key, Value, StaticLruCacheOptions<Key, Value, N>, ValueProvider,
+          DroppedEntryCallback> {
   using Base = typename StaticLruCache::Impl;
   friend Base;
 
-  using options_type = StaticLruCacheOptions<Key, Value, IndexType, N>;
+  using options_type = StaticLruCacheOptions<Key, Value, N>;
+  using IndexType = typename options_type::IndexType;
   using NodeContainer = typename options_type::NodeContainer;
   using Map = typename options_type::Map;
 
@@ -82,10 +81,9 @@ class StaticLruCache
 };
 
 // Factory function for a static LRU cache.
-template <typename Key, typename Value, typename IndexType, IndexType N,
-          typename ValueProvider,
+template <typename Key, typename Value, size_t N, typename ValueProvider,
           typename DroppedEntryCallback = void (*)(Key, Value)>
-StaticLruCache<Key, Value, IndexType, N, ValueProvider, DroppedEntryCallback>
+StaticLruCache<Key, Value, N, ValueProvider, DroppedEntryCallback>
 make_static_lru_cache(ValueProvider v,
                       DroppedEntryCallback c =
                           internal::no_op_dropped_entry_callback<Key, Value>) {

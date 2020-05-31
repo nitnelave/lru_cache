@@ -103,6 +103,7 @@ TEST_CASE("Result type works with non-const operator in classes", "[traits]") {
 
 TEST_CASE("index_type_for picks the right type", "[traits]") {
   STATIC_REQUIRE(std::is_same_v<index_type_for<3>, uint8_t>);
+  STATIC_REQUIRE(std::is_same_v<index_type_for<255>, uint8_t>);
   STATIC_REQUIRE(std::is_same_v<index_type_for<256>, uint16_t>);
   STATIC_REQUIRE(std::is_same_v<index_type_for<300>, uint16_t>);
   STATIC_REQUIRE(std::is_same_v<index_type_for<70'000>, uint32_t>);

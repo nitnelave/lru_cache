@@ -1,6 +1,7 @@
 #ifndef LRU_CACHE_ARRAY_NODE_CONTAINER_H_
 #define LRU_CACHE_ARRAY_NODE_CONTAINER_H_
 
+#include <limits>
 #include <type_traits>
 
 namespace lru_cache {

@@ -83,7 +83,7 @@ TEMPLATE_PRODUCT_TEST_CASE("Benchmark itoa", "[benchmarks]",
     return total_size;
   };
   BENCHMARK("nitnelave/lru_cache/static") {
-    auto cache = make_static_lru_cache<int, std::string, uint32_t, CACHE_SIZE>(ToString);
+    auto cache = make_static_lru_cache<int, std::string, CACHE_SIZE>(ToString);
     size_t total_size = 0;
     for (int key : keys) {
       total_size += cache[key].size();
