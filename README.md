@@ -110,6 +110,8 @@ a 50% miss rate.
 The task is to convert the given integer to a string. The baseline doesn't use
 any caching.
 
+The numbers are `miss rate`/`cache size`/`queries`.
+
 | Benchmark                   | 5%/100/1k (us) | 5%/10k/100k (ms) | 50%/100/1k (us) | 50%/10k/100k (ms) |
 |-----------------------------|----------------|------------------|-----------------|-------------------|
 | baseline                    | 352            | 36.3             | 355             | 36.1              |
