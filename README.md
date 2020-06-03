@@ -1,6 +1,6 @@
 # LRU cache
 
-A fast, generic C++ 17 LRU cache, with customizable backend.
+A fast, header-only, generic C++ 17 [LRU cache][1] library, with customizable backend.
 
 ## Example usage
 
@@ -82,7 +82,7 @@ easy to plug it in the `StaticLruCache` and get a no-allocation cache.
 When using the memoizing cache, any missing key is resolved by calling the
 function-like object provided at construction time.
 
-Moveover, if needed, you can pass a function that will be called with any
+Moreover, if needed, you can pass a function that will be called with any
 deleted key. This allows you to have custom cleanup, keep some statistics and
 so on.
 
@@ -100,6 +100,8 @@ implementations gathered from GitHub.
 For the benchmarks, the mean is taken, with 100 samples, a minimum confidence
 interval of 0.95, and 100ms of warmup.
 
+The benchmarks are run on a i7-3770 (3.4 GHz) with 16G RAM.
+
 ### Random access
 
 This benchmark initializes an array with random values chosen from a bigger
@@ -112,7 +114,7 @@ any caching.
 
 The numbers are `miss rate`/`cache size`/`queries`.
 
-| Benchmark                   | 5%/100/1k (us) | 5%/10k/100k (ms) | 50%/100/1k (us) | 50%/10k/100k (ms) |
+| Benchmark                   | 5%/100/1k (μs) | 5%/10k/100k (ms) | 50%/100/1k (μs) | 50%/10k/100k (ms) |
 |-----------------------------|----------------|------------------|-----------------|-------------------|
 | baseline                    | 352            | 36.3             | 355             | 36.1              |
 | nitnelave/lru_cache/dynamic | 78.5           | 9.04             | 272             | 29.7              |
@@ -140,7 +142,7 @@ The cache size was set to 10 elements.
 The baseline was not run because it would take too long. We stopped at 92
 because it's the biggest element that fits in 64 bits.
 
-| Benchmark                   | fibo(60) (us) | fibo(80) (us) | fibo(92) (us) |
+| Benchmark                   | fibo(60) (μs) | fibo(80) (μs) | fibo(92) (μs) |
 |-----------------------------|---------------|---------------|---------------|
 | nitnelave/lru_cache/dynamic | 4.56          | 6.09          | 7.01          |
 | nitnelave/lru_cache/static  | 4.27          | 5.96          | 6.60          |
@@ -149,3 +151,5 @@ because it's the biggest element that fits in 64 bits.
 | mohaps/LRUCache11           | 6.04          | 7.90          | 9.38          |
 | vpetrigo/caches             | 12.2          | 16.4          | 18.7          |
 | goldsborough/caches         | 5.45          | 7.52          | 8.40          |
+
+[1]: http://go/link/wiki/Cache_replacement_policies#Least_recently_used_(LRU)
